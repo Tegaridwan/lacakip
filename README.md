@@ -5,5 +5,6 @@
 <p>3.ketik: python lacakip.py 'domain-website'</p>
 <p>contoh python lacakip.py dpr.go.id</p>
 <h1>TERIMAKASIH</h1>
-
+<h3>Donasi</h3>
+<link>https://saweria.co/redtegar</link>
 
