@@ -14,17 +14,17 @@ import json
 import sys
 from ipaddress import ip_address, IPv4Address, IPv6Address, IPv4Network
 
-# --- Config ---
-DEFAULT_TIMEOUT = 6  # seconds for requests
-GEO_API_PRIMARY = "https://ipapi.co/{ip}/json/"      # returns JSON
-GEO_API_FALLBACK = "https://geolocation-db.com/jsonp/{ip}"  # returns JSONP
+
+DEFAULT_TIMEOUT = 6  
+GEO_API_PRIMARY = "https://ipapi.co/{ip}/json/"      
+GEO_API_FALLBACK = "https://geolocation-db.com/jsonp/{ip}"  
 
 PRIVATE_NETWORKS = [
     IPv4Network("10.0.0.0/8"),
     IPv4Network("172.16.0.0/12"),
     IPv4Network("192.168.0.0/16"),
-    IPv4Network("127.0.0.0/8"),   # loopback
-    IPv4Network("169.254.0.0/16") # link-local
+    IPv4Network("127.0.0.0/8"),   
+    IPv4Network("169.254.0.0/16")
 ]
 
 # --- Helpers ---
