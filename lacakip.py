@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 ip_geo.py
 Resolver hostname -> IP(s) -> geolocation lookup (with basic error handling).
@@ -27,7 +26,6 @@ PRIVATE_NETWORKS = [
     IPv4Network("169.254.0.0/16")
 ]
 
-# --- Helpers ---
 def is_private_ipv4(addr_str):
     try:
         ip = ip_address(addr_str)
@@ -60,7 +58,6 @@ def get_geo_ip_ipapi(ip):
         resp.raise_for_status()
         return resp.json()
     except Exception as e:
-        # propagate to allow fallback
         raise
 
 def get_geo_ip_geolocationdb(ip):
@@ -69,17 +66,14 @@ def get_geo_ip_geolocationdb(ip):
     resp = requests.get(url, timeout=DEFAULT_TIMEOUT)
     resp.raise_for_status()
     text = resp.text.strip()
-    # geolocation-db returns e.g. callback({...})
     if text.startswith("{"):
         return resp.json()
-    # try to strip JSONP wrapper
     try:
         start = text.index("(") + 1
         end = text.rindex(")")
         payload = text[start:end]
         return json.loads(payload)
     except Exception:
-        # last resort: try to parse raw as json
         return resp.json()
 
 def pretty_print_geo(ip, geo):
@@ -87,7 +81,6 @@ def pretty_print_geo(ip, geo):
     if not geo:
         print("No geolocation data.")
         return
-    # Print fields that commonly exist in different providers
     fields = [
         ("ip", "ip"),
         ("city", "city"),
@@ -105,7 +98,6 @@ def pretty_print_geo(ip, geo):
         ("asn", "asn")
     ]
     for key_alias in fields:
-        # key_alias might be a tuple where either element may exist in response
         if isinstance(key_alias, tuple):
             found = False
             for key in key_alias:
@@ -114,20 +106,17 @@ def pretty_print_geo(ip, geo):
                     found = True
                     break
             if not found:
-                # don't print missing field
                 pass
         else:
             if key_alias in geo:
                 print(f"{key_alias:12}: {geo.get(key_alias)}")
 
-    # print remaining keys if any
     extra = {k: v for k, v in geo.items() if k not in sum([list(k if isinstance(k, tuple) else [k]) for k in fields], [])}
     if extra:
         print("\nOther data:")
         for k, v in extra.items():
             print(f"{k:12}: {v}")
 
-# --- Main flow ---
 def main():
     parser = argparse.ArgumentParser(description="Resolve hostname to IP(s) and lookup geolocation")
     parser.add_argument("hostname", help="domain or hostname to lookup")
@@ -153,11 +142,9 @@ def main():
             continue
 
         geo = None
-        # try primary
         try:
             geo = get_geo_ip_ipapi(ip)
         except Exception as e_primary:
-            # try fallback
             try:
                 geo = get_geo_ip_geolocationdb(ip)
             except Exception as e_fb:
